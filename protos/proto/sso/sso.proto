@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sso;
+option go_package = "sso_local.v1;sso";
+
+// Определение сервиса аутентификации
+service SSOService {
+  // Метод для входа в систему
+  rpc SignIn (SignInRequest) returns (SignInResponse);
+}
+
+// Структура запроса для входа
+message SignInRequest {
+  int32 password = 1; // Пароль пользователя
+  int32 app_id = 2; // ID приложения
+
+}
+
+// Структура ответа после успешного входа
+message SignInResponse {
+  string access_token = 1; // Токен доступа
+}

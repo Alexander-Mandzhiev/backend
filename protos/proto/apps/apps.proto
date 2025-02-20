@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package app_provider;
+option go_package = "app_provider_local.v1;app_provider";
+
+service AppProviderService {
+  rpc Create (CreateRequest) returns (CreateResponse);
+  rpc App (GetAppRequest) returns (GetAppResponse);
+  rpc Apps (GetAppsRequest) returns (GetAppsResponse);
+  rpc Update (UpdateRequest) returns (UpdateResponse);
+  rpc Delete (DeleteRequest) returns (DeleteResponse);
+}
+
+message App {
+  int32 id = 1;
+  string name = 2;
+  string secret = 3;
+}
+
+message CreateRequest {
+  string name = 1;
+  string secret = 2;
+}
+
+message CreateResponse {
+  int32 id = 1;
+}
+
+message GetAppRequest {
+  int32 id = 1;
+}
+
+message GetAppResponse {
+  App app = 1;
+}
+
+message GetAppsRequest {}
+
+message GetAppsResponse {
+  repeated App apps = 1;
+}
+
+message UpdateRequest {
+  int32 id = 1;
+  string name = 2;
+  string secret = 3;
+}
+
+message UpdateResponse {
+  bool success = 1;
+}
+
+message DeleteRequest {
+  int32 id = 1;
+}
+
+message DeleteResponse {
+  bool success = 1;
+}
