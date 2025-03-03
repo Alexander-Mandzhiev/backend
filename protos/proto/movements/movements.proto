@@ -59,7 +59,9 @@ message DeleteMovementResponse {
 }
 
 // Пустой запрос и ответ для получения списка перемещений
-message ListMovementsRequest {}
+message ListMovementsRequest {
+  int64 product_id = 1;
+}
 message MovementListResponse {
-  repeated MovementResponse movements = 1;
+  repeated MovementResponse data = 1;
 }

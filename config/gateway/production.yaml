@@ -1,0 +1,14 @@
+env: "production" # Режим работы (development или production)
+address: "0.0.0.0" # Адрес сервера
+port: 6000 # Порт сервера
+timeout: "5s" # Таймаут запроса
+idle_timeout: "60s" # Idle таймаут
+services:
+ sso_addr: "0.0.0.0:6100" # Адрес сервиса sso
+ apps_addr: "0.0.0.0:6110" # Адрес сервиса apps
+ product_sk_addr: "0.0.0.0:6200" # Адрес сервиса product_sk
+ locations_addr: "0.0.0.0:6210" # Адрес сервиса locations
+ statuses_addr: "0.0.0.0:6220" # Адрес сервиса statuses
+ movements_addr: "0.0.0.0:6230" # Адрес сервиса movements
+ products_sk_statuses_addr: "0.0.0.0:6240" # Адрес сервиса products_sk_statuses
+ production_tasks_addr: "0.0.0.0:6250" # Адрес сервиса production_tasks

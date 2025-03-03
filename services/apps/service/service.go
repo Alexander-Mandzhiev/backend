@@ -1,9 +1,11 @@
 package service
 
 import (
+	sl "backend/pkg/logger"
 	app "backend/protos/gen/go/apps"
 	"context"
 	"errors"
+	"log/slog"
 )
 
 var (
@@ -23,5 +25,12 @@ type Service struct {
 }
 
 func New(appProvider AppProvider) *Service {
+	op := "service.New"
+	if appProvider == nil {
+		sl.Log.Error("Location provider is nil", slog.String("op", op))
+		return nil
+	}
+
+	sl.Log.Info("Service initialized", slog.String("op", op))
 	return &Service{appProvider: appProvider}
 }
