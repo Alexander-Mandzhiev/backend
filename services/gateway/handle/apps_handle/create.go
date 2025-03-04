@@ -1,21 +1,21 @@
-package location_handle
+package apps_handle
 
 import (
 	"backend/pkg/server/respond"
-	"backend/protos/gen/go/locations"
+	app "backend/protos/gen/go/apps"
 	"context"
 	"encoding/json"
 	"net/http"
 )
 
-func (s *LocationService) Create(w http.ResponseWriter, r *http.Request) {
-	var req locations.CreateLocationRequest
+func (s *AppsService) Create(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var req app.CreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respond.RespondedError(w, r, http.StatusBadRequest, err)
 		return
 	}
-
-	defer r.Body.Close()
 
 	resp, err := s.client.Create(context.Background(), &req)
 	if err != nil {

@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func (ls *LocationService) DeleteLocation(w http.ResponseWriter, r *http.Request, id int32) {
-	resp, err := ls.client.Delete(context.Background(), &locations.DeleteLocationRequest{Id: id})
+func (s *LocationService) Delete(w http.ResponseWriter, r *http.Request, id int32) {
+	resp, err := s.client.Delete(context.Background(), &locations.DeleteLocationRequest{Id: id})
 	if err != nil {
 		respond.RespondedError(w, r, http.StatusNotFound, err)
 		return

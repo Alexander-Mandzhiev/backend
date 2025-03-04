@@ -1,21 +1,22 @@
-package location_handle
+package apps_handle
 
 import (
 	"backend/pkg/server/respond"
-	"backend/protos/gen/go/locations"
+	app "backend/protos/gen/go/apps"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-func (s *LocationService) Update(w http.ResponseWriter, r *http.Request) {
-	var req locations.UpdateLocationRequest
+func (s *AppsService) Update(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var req app.UpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respond.RespondedError(w, r, http.StatusBadRequest, err)
 		return
 	}
-	defer r.Body.Close()
 
 	if req.Id <= 0 {
 		respond.RespondedError(w, r, http.StatusBadRequest, fmt.Errorf("ID must be provided in the request body"))

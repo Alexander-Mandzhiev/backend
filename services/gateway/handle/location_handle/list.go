@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func (ls *LocationService) ListLocations(w http.ResponseWriter, r *http.Request) {
-	resp, err := ls.client.List(context.Background(), &locations.ListLocationsRequest{})
+func (s *LocationService) List(w http.ResponseWriter, r *http.Request) {
+	resp, err := s.client.List(context.Background(), &locations.ListLocationsRequest{})
 	if err != nil {
 		respond.RespondedError(w, r, http.StatusInternalServerError, err)
 		return

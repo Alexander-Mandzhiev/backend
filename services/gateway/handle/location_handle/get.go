@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func (ls *LocationService) GetLocation(w http.ResponseWriter, r *http.Request, id int32) {
-	resp, err := ls.client.Location(context.Background(), &locations.GetLocationRequest{Id: id})
+func (s *LocationService) Get(w http.ResponseWriter, r *http.Request, id int32) {
+	resp, err := s.client.Location(context.Background(), &locations.GetLocationRequest{Id: id})
 	if err != nil {
 		respond.RespondedError(w, r, http.StatusNotFound, err)
 		return
