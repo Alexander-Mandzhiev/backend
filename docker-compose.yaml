@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  gateway:
+    container_name: gateway
+    build:
+      context: ./
+      dockerfile: ./cmd/gateway/Dockerfile
+    ports:
+      - "6000:6000"
+    environment:
+      - CONFIG_PATH=config/gateway/production.yaml
+    depends_on:
+      - sso
+      - apps
+      - locations
+      - movements
+      - production_task
+      - products_sk
+      - products_sk_statuses
+      - statuses
+    networks:
+      - app-network
+    restart: always
+
+  apps:
+    container_name: apps
+    build:
+      context: ./
+      dockerfile: ./cmd/apps/Dockerfile
+    ports:
+      - "6110:6110"
+    environment:
+      - CONFIG_PATH=config/apps/production.yaml
+    networks:
+      - app-network
+    restart: always
+
+  locations:
+    container_name: locations
+    build:
+      context: ./
+      dockerfile: ./cmd/locations/Dockerfile
+    ports:
+      - "6210:6210"
+    environment:
+      - CONFIG_PATH=config/locations/production.yaml
+    networks:
+      - app-network
+    restart: always
+
+  movements:
+    container_name: movements
+    build:
+      context: ./
+      dockerfile: ./cmd/movements/Dockerfile
+    ports:
+      - "6230:6230"
+    environment:
+      - CONFIG_PATH=config/movements/production.yaml
+    networks:
+      - app-network
+    restart: always
+
+  production_task:
+    container_name: production_task
+    build:
+      context: ./
+      dockerfile: ./cmd/production_task/Dockerfile
+    ports:
+      - "6250:6250"
+    environment:
+      - CONFIG_PATH=config/production_task/production.yaml
+    networks:
+      - app-network
+    restart: always
+
+  products_sk:
+    container_name: products_sk
+    build:
+      context: ./
+      dockerfile: ./cmd/products_sk/Dockerfile
+    ports:
+      - "6200:6200"
+    environment:
+      - CONFIG_PATH=config/products_sk/production.yaml
+    networks:
+      - app-network
+    restart: always
+
+  products_sk_statuses:
+    container_name: products_sk_statuses
+    build:
+      context: ./
+      dockerfile: ./cmd/products_sk_statuses/Dockerfile
+    ports:
+      - "6240:6240"
+    environment:
+      - CONFIG_PATH=config/products_sk_statuses/production.yaml
+    depends_on:
+      - products_sk
+      - statuses
+    networks:
+      - app-network
+    restart: always
+
+  sso:
+    container_name: sso
+    build:
+      context: ./
+      dockerfile: ./cmd/sso/Dockerfile
+    ports:
+      - "6100:6100"
+    environment:
+      - CONFIG_PATH=config/sso/production.yaml
+    depends_on:
+      - apps
+    networks:
+      - app-network
+    restart: always
+
+  statuses:
+    container_name: statuses
+    build:
+      context: ./
+      dockerfile: ./cmd/statuses/Dockerfile
+    ports:
+      - "6220:6220"
+    environment:
+      - CONFIG_PATH=config/statuses/production.yaml
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge

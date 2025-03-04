@@ -11,26 +11,29 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Основная структура конфигурации
 type Config struct {
 	Env         string        `yaml:"env" env:"ENV" env-default:"development"`           // Режим работы (development, production)
 	Address     string        `yaml:"address" env:"ADDRESS" env-default:"0.0.0.0"`       // Адрес сервера
-	Port        int           `yaml:"port" env:"PORT" env-default:"5000"`                // Порт сервера
+	Port        int           `yaml:"port" env:"PORT" env-default:"6000"`                // Порт сервера
 	Timeout     time.Duration `yaml:"timeout" env:"TIMEOUT" env-default:"5s"`            // Таймаут запроса
 	IdleTimeout time.Duration `yaml:"idle_timeout" env:"IDLE_TIMEOUT" env-default:"60s"` // Idle таймаут
 	Services    Services      `yaml:"services"`                                          // Настройки микросервисов
+	Frontend    Frontend      `yaml:"frontend"`                                          // Настройки фронтенда
 }
 
-// Структура для настроек микросервисов
 type Services struct {
-	Apps               string `yaml:"apps_addr" env:"APPS_ADDR" env-default:"0.0.0.0:5010"`                                 // Адрес сервиса apps
-	Locations          string `yaml:"locations_addr" env:"LOCATIONS_ADDR" env-default:"0.0.0.0:5011"`                       // Адрес сервиса locations
-	Movements          string `yaml:"movements_addr" env:"MOVEMENTS_ADDR" env-default:"0.0.0.0:5012"`                       // Адрес сервиса movements
-	ProductionTasks    string `yaml:"production_tasks_addr" env:"PRODUCTION_TASKS_ADDR" env-default:"0.0.0.0:5013"`         // Адрес сервиса production_tasks
-	ProductSK          string `yaml:"product_sk_addr" env:"PRODUCT_SK_ADDR" env-default:"0.0.0.0:5014"`                     // Адрес сервиса product_sk
-	ProductsSKStatuses string `yaml:"products_sk_statuses_addr" env:"PRODUCTS_SK_STATUSES_ADDR" env-default:"0.0.0.0:5015"` // Адрес сервиса products_sk_statuses
-	Sso                string `yaml:"sso_addr" env:"SSO_ADDR" env-default:"0.0.0.0:5016"`                                   // Адрес сервиса sso
-	Statuses           string `yaml:"statuses_addr" env:"STATUSES_ADDR" env-default:"0.0.0.0:5017"`                         // Адрес сервиса statuses
+	Apps               string `yaml:"apps_addr" env:"APPS_ADDR" env-default:"0.0.0.0:6110"`                                 // Адрес сервиса apps
+	Locations          string `yaml:"locations_addr" env:"LOCATIONS_ADDR" env-default:"0.0.0.0:6210"`                       // Адрес сервиса locations
+	Movements          string `yaml:"movements_addr" env:"MOVEMENTS_ADDR" env-default:"0.0.0.0:6230"`                       // Адрес сервиса movements
+	ProductionTasks    string `yaml:"production_tasks_addr" env:"PRODUCTION_TASKS_ADDR" env-default:"0.0.0.0:6250"`         // Адрес сервиса production_tasks
+	ProductSK          string `yaml:"product_sk_addr" env:"PRODUCT_SK_ADDR" env-default:"0.0.0.0:6200"`                     // Адрес сервиса product_sk
+	ProductsSKStatuses string `yaml:"products_sk_statuses_addr" env:"PRODUCTS_SK_STATUSES_ADDR" env-default:"0.0.0.0:6240"` // Адрес сервиса products_sk_statuses
+	Sso                string `yaml:"sso_addr" env:"SSO_ADDR" env-default:"0.0.0.0:6100"`                                   // Адрес сервиса sso
+	Statuses           string `yaml:"statuses_addr" env:"STATUSES_ADDR" env-default:"0.0.0.0:6220"`                         // Адрес сервиса statuses
+}
+
+type Frontend struct {
+	Addr string `yaml:"addr" env:"FRONTEND_ADDR" env-default:"0.0.0.0:8080"`
 }
 
 var Cfg *Config
@@ -93,6 +96,9 @@ func loadingDataInEnv() *Config {
 			ProductsSKStatuses: os.Getenv("PRODUCTS_SK_STATUSES_ADDR"),
 			Sso:                os.Getenv("SSO_ADDR"),
 			Statuses:           os.Getenv("STATUSES_ADDR"),
+		},
+		Frontend: Frontend{
+			Addr: os.Getenv("FRONTEND_ADDR"),
 		},
 	}
 }

@@ -1,2 +1,5 @@
 .idea
 *.exe
+*.yaml
+*.env
+*.log

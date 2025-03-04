@@ -8,6 +8,7 @@ import (
 	"github.com/rs/cors"
 	"log"
 	"net/http"
+	"time"
 )
 
 type APIServer struct {
@@ -25,8 +26,18 @@ func New() (*APIServer, error) {
 }
 
 func (s *APIServer) Start() error {
+	frontendAddr := cfg.Cfg.Frontend.Addr
+	if frontendAddr == "" {
+		log.Fatalf("Frontend address is not configured")
+	}
+
+	allowedOrigins := []string{
+		fmt.Sprintf("http://%s", frontendAddr),
+		fmt.Sprintf("https://%s", frontendAddr),
+	}
+
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:*", "https://localhost:*"},
+		AllowedOrigins:   allowedOrigins,
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization", "X-Requested-With", "X-API-Key", "X-Csrf-Token"},
@@ -46,5 +57,13 @@ func (s *APIServer) Start() error {
 }
 
 func (s *APIServer) Shutdown(ctx context.Context) error {
-	return s.httpserver.Shutdown(ctx)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	log.Println("Shutting down HTTP server...")
+	err := s.httpserver.Shutdown(ctx)
+	if err != nil {
+		log.Printf("HTTP server shutdown error: %v", err)
+	}
+	return err
 }
