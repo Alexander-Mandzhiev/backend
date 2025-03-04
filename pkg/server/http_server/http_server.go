@@ -26,7 +26,7 @@ func New() (*APIServer, error) {
 
 func (s *APIServer) Start() error {
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:*", "http://*"},
+		AllowedOrigins:   []string{"http://localhost:*", "https://localhost:*"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization", "X-Requested-With", "X-API-Key", "X-Csrf-Token"},
