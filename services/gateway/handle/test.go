@@ -5,6 +5,6 @@ import (
 	"net/http"
 )
 
-func (h *Handler) test(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) healthcheck(w http.ResponseWriter, r *http.Request) {
 	respond.Respond(w, r, http.StatusOK, "ok")
 }

@@ -32,6 +32,7 @@ func (s *APIServer) Start() error {
 	}
 
 	allowedOrigins := []string{
+		"http://localhost:*", "https://localhost:*",
 		fmt.Sprintf("http://%s", frontendAddr),
 		fmt.Sprintf("https://%s", frontendAddr),
 	}

@@ -44,8 +44,11 @@ func (h *Handler) InitRouters() http.Handler {
 }
 
 func (h *Handler) initRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/test", h.test)
+	mux.HandleFunc("/test", h.healthcheck)
+
+	mux.HandleFunc("/api/v1/login", h.ssoClient.SignIn)
+
 	mux.HandleFunc("/api/v1/location/", h.locationsClient.Locations)
 	mux.HandleFunc("/api/v1/apps/", h.appsClient.Apps)
-
+	mux.HandleFunc("/api/v1/statuses/", h.statusesClient.Statuses)
 }
