@@ -1,6 +1,7 @@
 package handle
 
 import (
+	sl "backend/pkg/logger"
 	"backend/services/gateway/handle/apps_handle"
 	"backend/services/gateway/handle/location_handle"
 	"backend/services/gateway/handle/movements_handle"
@@ -9,6 +10,7 @@ import (
 	"backend/services/gateway/handle/products_sk_statuses_handle"
 	"backend/services/gateway/handle/sso_handle"
 	"backend/services/gateway/handle/statuses_handle"
+	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"net/http"
 )
@@ -38,17 +40,45 @@ func New(ssoConn, appsConn, locationsConn, movementsConn, productionTasksConn, p
 }
 
 func (h *Handler) InitRouters() http.Handler {
-	mux := http.NewServeMux()
-	h.initRoutes(mux)
-	return mux
+	router := gin.Default()
+	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		Output: sl.NewLoggerWriter(sl.Log), // Используем нашу обертку
+	}))
+
+	api := router.Group("/api/v1")
+	router.Use(gin.Recovery())
+
+	h.initLocationRoutes(api)
+	h.initAppsRoutes(api)
+	h.initStatusesRoutes(api)
+	h.initSSORoutes(api)
+	return router
 }
 
-func (h *Handler) initRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/test", h.healthcheck)
+func (h *Handler) initLocationRoutes(api *gin.RouterGroup) {
+	api.GET("/location", h.locationsClient.List)
+	api.POST("/location", h.locationsClient.Create)
+	api.GET("/location/:id", h.locationsClient.Get)
+	api.PUT("/location/:id", h.locationsClient.Update)
+	api.DELETE("/location/:id", h.locationsClient.Delete)
+}
 
-	mux.HandleFunc("/api/v1/login", h.ssoClient.SignIn)
+func (h *Handler) initAppsRoutes(api *gin.RouterGroup) {
+	api.POST("/apps", h.appsClient.Create)
+	api.GET("/apps", h.appsClient.List)
+	api.GET("/apps/:id", h.appsClient.Get)
+	api.PUT("/apps/:id", h.appsClient.Update)
+	api.DELETE("/apps/:id", h.appsClient.Delete)
+}
 
-	mux.HandleFunc("/api/v1/location/", h.locationsClient.Locations)
-	mux.HandleFunc("/api/v1/apps/", h.appsClient.Apps)
-	mux.HandleFunc("/api/v1/statuses/", h.statusesClient.Statuses)
+func (h *Handler) initStatusesRoutes(api *gin.RouterGroup) {
+	api.POST("/statuses", h.statusesClient.Create)
+	api.GET("/statuses", h.statusesClient.List)
+	api.GET("/statuses/:id", h.statusesClient.Get)
+	api.PUT("/statuses/:id", h.statusesClient.Update)
+	api.DELETE("/statuses/:id", h.statusesClient.Delete)
+}
+
+func (h *Handler) initSSORoutes(api *gin.RouterGroup) {
+	api.POST("/login", h.ssoClient.SignIn)
 }

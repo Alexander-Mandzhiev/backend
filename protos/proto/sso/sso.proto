@@ -11,7 +11,7 @@ service SSOService {
 
 // Структура запроса для входа
 message SignInRequest {
-  int32 password = 1; // Пароль пользователя
+  int64 password = 1; // Пароль пользователя
   int32 app_id = 2; // ID приложения
 
 }

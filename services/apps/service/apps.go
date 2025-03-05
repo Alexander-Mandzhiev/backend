@@ -18,5 +18,5 @@ func (s *Service) Apps(ctx context.Context) (*app.GetAppsResponse, error) {
 		return nil, status.Errorf(codes.Internal, "%s: failed to fetch apps: %v", op, err)
 	}
 
-	return &app.GetAppsResponse{Apps: apps}, nil
+	return &app.GetAppsResponse{Data: apps}, nil
 }

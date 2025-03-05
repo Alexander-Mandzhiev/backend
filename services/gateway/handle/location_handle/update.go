@@ -1,32 +1,37 @@
 package location_handle
 
 import (
-	"backend/pkg/server/respond"
+	sl "backend/pkg/logger"
 	"backend/protos/gen/go/locations"
 	"context"
-	"encoding/json"
-	"fmt"
+	"github.com/gin-gonic/gin"
+	"log/slog"
 	"net/http"
 )
 
-func (s *LocationService) Update(w http.ResponseWriter, r *http.Request) {
+func (s *LocationService) Update(c *gin.Context) {
+	op := "location.Update"
 	var req locations.UpdateLocationRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respond.RespondedError(w, r, http.StatusBadRequest, err)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		sl.Log.Warn("Invalid request body", sl.Err(err), slog.String("op", op))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	defer r.Body.Close()
 
 	if req.Id <= 0 {
-		respond.RespondedError(w, r, http.StatusBadRequest, fmt.Errorf("ID must be provided in the request body"))
+		sl.Log.Warn("ID must be provided in the request body", slog.String("op", op))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID must be provided in the request body"})
 		return
 	}
+
+	sl.Log.Info("Updating location", slog.String("name", req.GetName()), slog.String("type", req.GetType()), slog.Int("capacity", int(req.GetCapacity())), slog.String("op", op))
 
 	resp, err := s.client.Update(context.Background(), &req)
 	if err != nil {
-		respond.RespondedError(w, r, http.StatusInternalServerError, err)
+		sl.Log.Error("Error updating location", sl.Err(err), slog.Int("id", int(req.Id)), slog.String("op", op))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	respond.Respond(w, r, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }

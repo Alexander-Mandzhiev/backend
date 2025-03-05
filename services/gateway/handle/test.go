@@ -1,10 +1,10 @@
 package handle
 
 import (
-	"backend/pkg/server/respond"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func (h *Handler) healthcheck(w http.ResponseWriter, r *http.Request) {
-	respond.Respond(w, r, http.StatusOK, "ok")
+func (h *Handler) healthcheck(c *gin.Context) {
+	c.JSON(http.StatusOK, "ok")
 }

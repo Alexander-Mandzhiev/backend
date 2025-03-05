@@ -1,18 +1,34 @@
 package apps_handle
 
 import (
-	"backend/pkg/server/respond"
+	sl "backend/pkg/logger"
 	app "backend/protos/gen/go/apps"
 	"context"
+	"github.com/gin-gonic/gin"
+	"log/slog"
 	"net/http"
+	"strconv"
 )
 
-func (s *AppsService) Get(w http.ResponseWriter, r *http.Request, id int32) {
-	resp, err := s.client.App(context.Background(), &app.GetAppRequest{Id: id})
-	if err != nil {
-		respond.RespondedError(w, r, http.StatusNotFound, err)
+func (s *AppsService) Get(c *gin.Context) {
+	op := "apps.Get"
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 32)
+	if err != nil || id <= 0 {
+		sl.Log.Warn("Invalid ID provided", slog.String("id", idStr), slog.String("op", op))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	respond.Respond(w, r, http.StatusOK, resp)
+	sl.Log.Info("Fetching app", slog.Int("id", int(id)), slog.String("op", op))
+
+	resp, err := s.client.App(context.Background(), &app.GetAppRequest{Id: int32(id)})
+	if err != nil {
+		sl.Log.Error("Error fetching app", sl.Err(err), slog.Int("id", int(id)), slog.String("op", op))
+		c.JSON(http.StatusNotFound, gin.H{"error": "App not found"})
+		return
+	}
+
+	sl.Log.Info("Successfully fetched app", slog.Int64("id", int64(resp.GetApp().GetId())), slog.String("op", op))
+	c.JSON(http.StatusOK, resp)
 }

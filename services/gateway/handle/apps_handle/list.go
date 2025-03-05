@@ -1,18 +1,25 @@
 package apps_handle
 
 import (
-	"backend/pkg/server/respond"
+	sl "backend/pkg/logger"
 	app "backend/protos/gen/go/apps"
 	"context"
+	"github.com/gin-gonic/gin"
+	"log/slog"
 	"net/http"
 )
 
-func (s *AppsService) List(w http.ResponseWriter, r *http.Request) {
+func (s *AppsService) List(c *gin.Context) {
+	op := "apps.List"
+	sl.Log.Info("Handling request to list apps", slog.String("op", op))
+
 	resp, err := s.client.Apps(context.Background(), &app.GetAppsRequest{})
 	if err != nil {
-		respond.RespondedError(w, r, http.StatusInternalServerError, err)
+		sl.Log.Error("Error listing apps", sl.Err(err), slog.String("op", op))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch apps"})
 		return
 	}
 
-	respond.Respond(w, r, http.StatusOK, resp)
+	sl.Log.Info("Successfully fetched apps", slog.Int("count", len(resp.Data)), slog.String("op", op))
+	c.JSON(http.StatusOK, resp)
 }

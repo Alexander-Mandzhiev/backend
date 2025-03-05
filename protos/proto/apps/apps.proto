@@ -37,7 +37,7 @@ message GetAppResponse {
 message GetAppsRequest {}
 
 message GetAppsResponse {
-  repeated App apps = 1;
+  repeated App data = 1;
 }
 
 message UpdateRequest {

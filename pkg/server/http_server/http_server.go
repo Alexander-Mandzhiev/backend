@@ -43,6 +43,7 @@ func (s *APIServer) Start() error {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization", "X-Requested-With", "X-API-Key", "X-Csrf-Token"},
 	})
+
 	handlerWithCORS := c.Handler(s.gateway.InitRouters())
 
 	s.httpserver = &http.Server{

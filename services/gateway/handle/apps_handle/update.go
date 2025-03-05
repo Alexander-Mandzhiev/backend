@@ -1,33 +1,38 @@
 package apps_handle
 
 import (
-	"backend/pkg/server/respond"
+	sl "backend/pkg/logger"
 	app "backend/protos/gen/go/apps"
 	"context"
-	"encoding/json"
-	"fmt"
+	"github.com/gin-gonic/gin"
+	"log/slog"
 	"net/http"
 )
 
-func (s *AppsService) Update(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
+func (s *AppsService) Update(c *gin.Context) {
+	op := "apps.Update"
 	var req app.UpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respond.RespondedError(w, r, http.StatusBadRequest, err)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		sl.Log.Warn("Invalid request body", sl.Err(err), slog.String("op", op))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
 	if req.Id <= 0 {
-		respond.RespondedError(w, r, http.StatusBadRequest, fmt.Errorf("ID must be provided in the request body"))
+		sl.Log.Warn("ID must be provided in the request body", slog.String("op", op))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID must be provided in the request body"})
 		return
 	}
+
+	sl.Log.Info("Updating app", slog.Int("id", int(req.Id)), slog.String("name", req.GetName()), slog.String("op", op))
 
 	resp, err := s.client.Update(context.Background(), &req)
 	if err != nil {
-		respond.RespondedError(w, r, http.StatusInternalServerError, err)
+		sl.Log.Error("Error updating app", sl.Err(err), slog.Int("id", int(req.Id)), slog.String("op", "apps.Update"))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update app"})
 		return
 	}
 
-	respond.Respond(w, r, http.StatusOK, resp)
+	sl.Log.Info("App updated successfully", slog.Int("id", int(req.Id)), slog.String("op", "apps.Update"))
+	c.JSON(http.StatusOK, resp)
 }

@@ -1,27 +1,32 @@
 package location_handle
 
 import (
-	"backend/pkg/server/respond"
+	sl "backend/pkg/logger"
 	"backend/protos/gen/go/locations"
 	"context"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"log/slog"
 	"net/http"
 )
 
-func (s *LocationService) Create(w http.ResponseWriter, r *http.Request) {
+func (s *LocationService) Create(c *gin.Context) {
+	op := "location.Create"
 	var req locations.CreateLocationRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respond.RespondedError(w, r, http.StatusBadRequest, err)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		sl.Log.Warn("Invalid request body", sl.Err(err), slog.String("op", op))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	defer r.Body.Close()
+	sl.Log.Info("Creating new location", slog.String("name", req.GetName()), slog.String("type", req.GetType()), slog.Int("capacity", int(req.GetCapacity())), slog.String("op", op))
 
 	resp, err := s.client.Create(context.Background(), &req)
 	if err != nil {
-		respond.RespondedError(w, r, http.StatusInternalServerError, err)
+		sl.Log.Error("Error creating location", sl.Err(err), slog.String("op", op))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	respond.Respond(w, r, http.StatusCreated, resp)
+	sl.Log.Info("Location created successfully", slog.Int("id", int(resp.Id)), slog.String("op", op))
+	c.JSON(http.StatusCreated, resp)
 }
