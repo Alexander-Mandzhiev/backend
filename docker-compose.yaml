@@ -23,6 +23,21 @@ services:
       - app-network
     restart: always
 
+  sso:
+    container_name: sso
+    build:
+      context: ./
+      dockerfile: ./cmd/sso/Dockerfile
+    ports:
+      - "6100:6100"
+    environment:
+      - CONFIG_PATH=config/sso/production.yaml
+    depends_on:
+      - apps
+    networks:
+      - app-network
+    restart: always
+
   apps:
     container_name: apps
     build:
@@ -45,6 +60,31 @@ services:
       - "6210:6210"
     environment:
       - CONFIG_PATH=config/locations/production.yaml
+    networks:
+      - app-network
+    restart: always
+
+  location_types:
+    container_name: location_types
+    build:
+      context: ./
+      dockerfile: ./cmd/location_types/Dockerfile
+    ports:
+      - "6260:6260"
+    environment:
+      - CONFIG_PATH=config/location_types/production.yaml
+    networks:
+      - app-network
+    restart: always
+  statuses:
+    container_name: statuses
+    build:
+      context: ./
+      dockerfile: ./cmd/statuses/Dockerfile
+    ports:
+      - "6220:6220"
+    environment:
+      - CONFIG_PATH=config/statuses/production.yaml
     networks:
       - app-network
     restart: always
@@ -100,34 +140,6 @@ services:
     depends_on:
       - products_sk
       - statuses
-    networks:
-      - app-network
-    restart: always
-
-  sso:
-    container_name: sso
-    build:
-      context: ./
-      dockerfile: ./cmd/sso/Dockerfile
-    ports:
-      - "6100:6100"
-    environment:
-      - CONFIG_PATH=config/sso/production.yaml
-    depends_on:
-      - apps
-    networks:
-      - app-network
-    restart: always
-
-  statuses:
-    container_name: statuses
-    build:
-      context: ./
-      dockerfile: ./cmd/statuses/Dockerfile
-    ports:
-      - "6220:6220"
-    environment:
-      - CONFIG_PATH=config/statuses/production.yaml
     networks:
       - app-network
     restart: always
