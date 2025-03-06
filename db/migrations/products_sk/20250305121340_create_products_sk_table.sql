@@ -5,8 +5,8 @@ CREATE TABLE products_sk (
     part_name VARCHAR(255) NOT NULL,
     nomenclature VARCHAR(255) NOT NULL,
     number_frame INT NOT NULL,
-    weight_sp_kg FLOAT NOT NULL,
-    weight_gp_kg FLOAT NULL,
+    weight_sp_kg DECIMAL(10, 2) NOT NULL,
+    weight_gp_kg DECIMAL(10, 2) NULL,
     manufacturing_date DATETIME NOT NULL
 );
 -- +goose StatementEnd

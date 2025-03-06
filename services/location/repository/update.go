@@ -9,11 +9,11 @@ import (
 	"log/slog"
 )
 
-func (r *Repository) Update(ctx context.Context, location *locations.LocationResponse) error {
+func (r *Repository) Update(ctx context.Context, location *locations.UpdateLocationRequest) error {
 	op := "repository.Update"
-	query := `UPDATE locations SET name = ?, type = ?, capacity = ?, current_load = ? WHERE id = ?`
+	query := `UPDATE locations SET name = ?, type_id = ?, capacity = ?, current_load = ? WHERE id = ?`
 	sl.Log.Debug("Updating location", slog.String("op", op), slog.Any("location", location))
-	result, err := r.db.ExecContext(ctx, query, location.GetName(), location.GetType(), location.GetCapacity(), location.GetCurrentLoad(), location.GetId())
+	result, err := r.db.ExecContext(ctx, query, location.GetName(), location.GetTypeId(), location.GetCapacity(), location.GetCurrentLoad(), location.GetId())
 	if err != nil {
 		sl.Log.Error("Failed to update location", slog.String("op", op), slog.Any("error", err), slog.Int("id", int(location.GetId())))
 		return fmt.Errorf("failed to update location: %w", err)

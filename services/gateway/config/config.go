@@ -24,6 +24,7 @@ type Config struct {
 type Services struct {
 	Apps               string `yaml:"apps_addr" env:"APPS_ADDR" env-default:"0.0.0.0:6110"`                                 // Адрес сервиса apps
 	Locations          string `yaml:"locations_addr" env:"LOCATIONS_ADDR" env-default:"0.0.0.0:6210"`                       // Адрес сервиса locations
+	LocationTypes      string `yaml:"location_types_addr" env:"LOCATION_TYPES_ADDR" env-default:"0.0.0.0:6260"`             // Адрес сервиса locations
 	Movements          string `yaml:"movements_addr" env:"MOVEMENTS_ADDR" env-default:"0.0.0.0:6230"`                       // Адрес сервиса movements
 	ProductionTasks    string `yaml:"production_tasks_addr" env:"PRODUCTION_TASKS_ADDR" env-default:"0.0.0.0:6250"`         // Адрес сервиса production_tasks
 	ProductSK          string `yaml:"product_sk_addr" env:"PRODUCT_SK_ADDR" env-default:"0.0.0.0:6200"`                     // Адрес сервиса product_sk
@@ -90,6 +91,7 @@ func loadingDataInEnv() *Config {
 		Services: Services{
 			Apps:               os.Getenv("APPS_ADDR"),
 			Locations:          os.Getenv("LOCATIONS_ADDR"),
+			LocationTypes:      os.Getenv("LOCATION_TYPES_ADDR"),
 			Movements:          os.Getenv("MOVEMENTS_ADDR"),
 			ProductionTasks:    os.Getenv("PRODUCTION_TASKS_ADDR"),
 			ProductSK:          os.Getenv("PRODUCT_SK_ADDR"),

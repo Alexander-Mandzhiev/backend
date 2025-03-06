@@ -8,9 +8,9 @@ import (
 	"log/slog"
 )
 
-func (r *Repository) Locations(ctx context.Context) ([]*locations.LocationResponse, error) {
+func (r *Repository) Locations(ctx context.Context) ([]*locations.UpdateLocationRequest, error) {
 	op := "repository.Locations"
-	query := `SELECT id, name, type, capacity, current_load FROM locations`
+	query := `SELECT id, name, type_id, capacity, current_load FROM locations`
 
 	sl.Log.Debug("Fetching all locations", slog.String("op", op))
 
@@ -21,10 +21,10 @@ func (r *Repository) Locations(ctx context.Context) ([]*locations.LocationRespon
 	}
 	defer rows.Close()
 
-	var locationsList []*locations.LocationResponse
+	var locationsList []*locations.UpdateLocationRequest
 	for rows.Next() {
-		var loc locations.LocationResponse
-		if err = rows.Scan(&loc.Id, &loc.Name, &loc.Type, &loc.Capacity, &loc.CurrentLoad); err != nil {
+		var loc locations.UpdateLocationRequest
+		if err = rows.Scan(&loc.Id, &loc.Name, &loc.TypeId, &loc.Capacity, &loc.CurrentLoad); err != nil {
 			sl.Log.Error("Failed to scan location row", slog.String("op", op), slog.Any("error", err))
 			return nil, fmt.Errorf("failed to scan location row: %w", err)
 		}

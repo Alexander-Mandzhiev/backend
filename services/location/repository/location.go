@@ -10,14 +10,14 @@ import (
 	"log/slog"
 )
 
-func (r *Repository) Location(ctx context.Context, id int) (*locations.LocationResponse, error) {
+func (r *Repository) Location(ctx context.Context, id int) (*locations.UpdateLocationRequest, error) {
 	op := "repository.Location"
-	query := `SELECT id, name, type, capacity, current_load FROM locations WHERE id = ?`
+	query := `SELECT id, name, type_id, capacity, current_load FROM locations WHERE id = ?`
 
 	sl.Log.Debug("Fetching location by ID", slog.String("op", op), slog.Int("id", id))
 
-	var loc locations.LocationResponse
-	err := r.db.QueryRowContext(ctx, query, id).Scan(&loc.Id, &loc.Name, &loc.Type, &loc.Capacity, &loc.CurrentLoad)
+	var loc locations.UpdateLocationRequest
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&loc.Id, &loc.Name, &loc.TypeId, &loc.Capacity, &loc.CurrentLoad)
 	if err == sql.ErrNoRows {
 		sl.Log.Warn("Location not found", slog.String("op", op), slog.Int("id", id))
 		return nil, service.ErrLocationNotFound

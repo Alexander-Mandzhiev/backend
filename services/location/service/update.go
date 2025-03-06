@@ -2,26 +2,37 @@ package service
 
 import (
 	sl "backend/pkg/logger"
+	"backend/protos/gen/go/location_types"
 	"backend/protos/gen/go/locations"
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 )
 
 func (s *Service) Update(ctx context.Context, request *locations.UpdateLocationRequest) (*locations.LocationResponse, error) {
 	op := "service.Update"
-	updatedLocation := &locations.LocationResponse{
+	updatedLocation := &locations.UpdateLocationRequest{
 		Id:          request.GetId(),
 		Name:        request.GetName(),
-		Type:        request.GetType(),
+		TypeId:      request.GetTypeId(),
 		Capacity:    request.GetCapacity(),
 		CurrentLoad: request.GetCurrentLoad(),
 	}
 
-	sl.Log.Debug("Updating location", slog.String("op", op), slog.Any("request", request))
+	if updatedLocation.Capacity < 0 || updatedLocation.CurrentLoad < 0 {
+		sl.Log.Warn("Invalid input data", slog.String("op", op), slog.Any("request", request))
+		return nil, fmt.Errorf("negative values are not allowed for capacity or current_load")
+	}
 
-	err := s.locationProvider.Update(ctx, updatedLocation)
+	locationType, err := s.locationTypesClient.Get(ctx, &location_types.GetLocationTypeRequest{Id: updatedLocation.TypeId})
 	if err != nil {
+		sl.Log.Warn("Location type not found", slog.String("op", op), slog.Int("type_id", int(updatedLocation.TypeId)))
+		return nil, fmt.Errorf("location type with id %d not found", updatedLocation.TypeId)
+	}
+	sl.Log.Debug("Location type validated successfully", slog.String("op", op), slog.String("type_name", locationType.GetName()))
+
+	if err = s.locationProvider.Update(ctx, updatedLocation); err != nil {
 		if errors.Is(err, ErrLocationNotFound) {
 			sl.Log.Warn("Location not found during update", slog.String("op", op), slog.Int("id", int(updatedLocation.Id)))
 		} else {
@@ -31,5 +42,11 @@ func (s *Service) Update(ctx context.Context, request *locations.UpdateLocationR
 	}
 
 	sl.Log.Info("Location updated successfully", slog.String("op", op), slog.Int("id", int(updatedLocation.Id)))
-	return updatedLocation, nil
+	return &locations.LocationResponse{
+		Id:          updatedLocation.Id,
+		Name:        updatedLocation.Name,
+		Type:        locationType.GetName(),
+		Capacity:    updatedLocation.Capacity,
+		CurrentLoad: updatedLocation.CurrentLoad,
+	}, nil
 }

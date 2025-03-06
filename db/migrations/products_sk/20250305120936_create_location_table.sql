@@ -3,7 +3,7 @@
 CREATE TABLE locations (
     id INT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    type VARCHAR(50) NOT NULL, -- Например, "сушилка", "склад"
+    type_id INT NOT NULL REFERENCES location_types(id), -- Ссылка на тип локации
     capacity INT NOT NULL DEFAULT 0, -- Вместимость (в кг или единицах)
     current_load INT NOT NULL DEFAULT 0 -- Текущая загрузка
 );

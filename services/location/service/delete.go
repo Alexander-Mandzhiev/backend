@@ -11,7 +11,6 @@ import (
 func (s *Service) Delete(ctx context.Context, request *locations.DeleteLocationRequest) (*locations.DeleteLocationResponse, error) {
 	op := "service.Delete"
 	id := int(request.GetId())
-
 	sl.Log.Debug("Deleting location", slog.String("op", op), slog.Int("id", id))
 
 	err := s.locationProvider.Delete(ctx, id)
@@ -25,6 +24,5 @@ func (s *Service) Delete(ctx context.Context, request *locations.DeleteLocationR
 	}
 
 	sl.Log.Info("Location deleted successfully", slog.String("op", op), slog.Int("id", id))
-
 	return &locations.DeleteLocationResponse{Success: true}, nil
 }

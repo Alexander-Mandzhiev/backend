@@ -8,10 +8,10 @@ import (
 	"log/slog"
 )
 
-func (r *Repository) Create(ctx context.Context, loc *locations.LocationResponse) (int32, error) {
+func (r *Repository) Create(ctx context.Context, loc *locations.CreateLocationRequest) (int32, error) {
 	op := "repository.Create"
 	query := `
-        INSERT INTO locations (name, type, capacity, current_load)
+        INSERT INTO locations (name, type_id, capacity, current_load)
         OUTPUT INSERTED.id
         VALUES (?, ?, ?, ?)
     `
@@ -19,8 +19,7 @@ func (r *Repository) Create(ctx context.Context, loc *locations.LocationResponse
 	sl.Log.Debug("Creating new location", slog.String("op", op), slog.Any("location", loc))
 
 	var id int32
-	err := r.db.QueryRowContext(ctx, query, loc.GetName(), loc.GetType(),
-		loc.GetCapacity(), loc.GetCurrentLoad()).Scan(&id)
+	err := r.db.QueryRowContext(ctx, query, loc.GetName(), loc.GetTypeId(), loc.GetCapacity(), loc.GetCurrentLoad()).Scan(&id)
 
 	if err != nil {
 		sl.Log.Error("Failed to create location", slog.String("op", op), slog.Any("error", err))

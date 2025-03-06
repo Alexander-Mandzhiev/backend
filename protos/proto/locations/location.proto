@@ -24,7 +24,7 @@ service LocationService {
 // Запрос на создание локации
 message CreateLocationRequest {
   string name = 1;
-  string type = 2;
+  int32 type_id = 2;
   int32 capacity = 3;
   int32 current_load = 4;
 }
@@ -38,7 +38,7 @@ message GetLocationRequest {
 message UpdateLocationRequest {
   int32 id = 1;
   string name = 2;
-  string type = 3;
+  int32 type_id = 3;
   int32 capacity = 4;
   int32 current_load = 5;
 }

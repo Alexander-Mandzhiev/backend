@@ -24,7 +24,7 @@ func (s *LocationService) Update(c *gin.Context) {
 		return
 	}
 
-	sl.Log.Info("Updating location", slog.String("name", req.GetName()), slog.String("type", req.GetType()), slog.Int("capacity", int(req.GetCapacity())), slog.String("op", op))
+	sl.Log.Info("Updating location", slog.String("name", req.GetName()), slog.Int("type_id", int(req.GetTypeId())), slog.Int("capacity", int(req.GetCapacity())), slog.String("op", op))
 
 	resp, err := s.client.Update(context.Background(), &req)
 	if err != nil {

@@ -12,6 +12,10 @@ CREATE TABLE movements (
     FOREIGN KEY (from_location_id) REFERENCES locations(id),
     FOREIGN KEY (to_location_id) REFERENCES locations(id)
 );
+
+CREATE INDEX idx_movements_product_id ON movements(product_id);
+CREATE INDEX idx_movements_from_location_id ON movements(from_location_id);
+CREATE INDEX idx_movements_to_location_id ON movements(to_location_id);
 -- +goose StatementEnd
 
 -- +goose Down

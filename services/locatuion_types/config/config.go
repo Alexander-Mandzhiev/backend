@@ -15,7 +15,6 @@ type Config struct {
 	Env        string         `yaml:"env" env:"ENV" env-default:"development"`
 	GRPCServer GRPCServer     `yaml:"grpc_server"`
 	DBConfig   DatabaseConfig `yaml:"database"`
-	Services   ServicesConfig `yaml:"services"`
 }
 
 type GRPCServer struct {
@@ -34,14 +33,6 @@ type MSSQLConfig struct {
 	MaxOpenConnections int           `yaml:"max_open_connections" env:"MSSQL_MAX_OPEN_CONNECTIONS" env-default:"10"`
 	MaxIdleConnections int           `yaml:"max_idle_connections" env:"MSSQL_MAX_IDLE_CONNECTIONS" env-default:"5"`
 	ConnMaxLifetime    time.Duration `yaml:"conn_max_lifetime" env:"MSSQL_CONN_MAX_LIFETIME" env-default:"5m"`
-}
-type ServicesConfig struct {
-	LocationTypesService ServiceConfig `yaml:"location_types_service"`
-}
-
-type ServiceConfig struct {
-	Address string `yaml:"address" env:"SERVICE_ADDRESS"`
-	Port    int    `yaml:"port" env:"SERVICE_PORT"`
 }
 
 var Cfg *Config

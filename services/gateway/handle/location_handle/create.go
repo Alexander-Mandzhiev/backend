@@ -18,7 +18,7 @@ func (s *LocationService) Create(c *gin.Context) {
 		return
 	}
 
-	sl.Log.Info("Creating new location", slog.String("name", req.GetName()), slog.String("type", req.GetType()), slog.Int("capacity", int(req.GetCapacity())), slog.String("op", op))
+	sl.Log.Info("Creating new location", slog.String("name", req.GetName()), slog.Int("type", int(req.GetTypeId())), slog.Int("capacity", int(req.GetCapacity())), slog.String("op", op))
 
 	resp, err := s.client.Create(context.Background(), &req)
 	if err != nil {

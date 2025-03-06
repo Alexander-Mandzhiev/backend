@@ -4,6 +4,7 @@ import (
 	sl "backend/pkg/logger"
 	"backend/services/gateway/handle/apps_handle"
 	"backend/services/gateway/handle/location_handle"
+	"backend/services/gateway/handle/location_types_handle"
 	"backend/services/gateway/handle/movements_handle"
 	"backend/services/gateway/handle/production_task_handle"
 	"backend/services/gateway/handle/products_sk_handle"
@@ -17,6 +18,7 @@ import (
 
 type Handler struct {
 	locationsClient          *location_handle.LocationService
+	locationTypesClient      *location_types_handle.LocationTypesService
 	appsClient               *apps_handle.AppsService
 	ssoClient                *sso_handle.SSOService
 	movementsClient          *movements_handle.MovementsHandle
@@ -26,11 +28,12 @@ type Handler struct {
 	statusesClient           *statuses_handle.StatusesService
 }
 
-func New(ssoConn, appsConn, locationsConn, movementsConn, productionTasksConn, productSKConn, productsSKStatusesConn, statusesConn *grpc.ClientConn) *Handler {
+func New(ssoConn, appsConn, locationsConn, locationTypesConn, movementsConn, productionTasksConn, productSKConn, productsSKStatusesConn, statusesConn *grpc.ClientConn) *Handler {
 	return &Handler{
 		ssoClient:                sso_handle.New(ssoConn),
 		appsClient:               apps_handle.New(appsConn),
 		locationsClient:          location_handle.New(locationsConn),
+		locationTypesClient:      location_types_handle.New(locationTypesConn),
 		movementsClient:          movements_handle.New(movementsConn),
 		productionTasksClient:    production_task_handle.New(productionTasksConn),
 		productSKClient:          products_sk_handle.New(productSKConn),
@@ -49,6 +52,7 @@ func (h *Handler) InitRouters() http.Handler {
 	router.Use(gin.Recovery())
 
 	h.initLocationRoutes(api)
+	h.initLocationTypesRoutes(api)
 	h.initAppsRoutes(api)
 	h.initStatusesRoutes(api)
 	h.initSSORoutes(api)
@@ -56,11 +60,19 @@ func (h *Handler) InitRouters() http.Handler {
 }
 
 func (h *Handler) initLocationRoutes(api *gin.RouterGroup) {
-	api.GET("/location", h.locationsClient.List)
-	api.POST("/location", h.locationsClient.Create)
-	api.GET("/location/:id", h.locationsClient.Get)
-	api.PUT("/location/:id", h.locationsClient.Update)
-	api.DELETE("/location/:id", h.locationsClient.Delete)
+	api.GET("/locations", h.locationsClient.List)
+	api.POST("/locations", h.locationsClient.Create)
+	api.GET("/locations/:id", h.locationsClient.Get)
+	api.PUT("/locations/:id", h.locationsClient.Update)
+	api.DELETE("/locations/:id", h.locationsClient.Delete)
+}
+
+func (h *Handler) initLocationTypesRoutes(api *gin.RouterGroup) {
+	api.POST("/location_types", h.locationTypesClient.Create)
+	api.GET("/location_types", h.locationTypesClient.List)
+	api.GET("/location_types/:id", h.locationTypesClient.Get)
+	api.PUT("/location_types/:id", h.locationTypesClient.Update)
+	api.DELETE("/location_types/:id", h.locationTypesClient.Delete)
 }
 
 func (h *Handler) initAppsRoutes(api *gin.RouterGroup) {

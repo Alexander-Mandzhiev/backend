@@ -31,6 +31,12 @@ func initializeHandler() (*handle.Handler, error) {
 		log.Printf("Failed to connect to Locations service: %v", err)
 		errs = append(errs, fmt.Errorf("locations connection failed: %w", err))
 	}
+	locationTypesConn, err := clientManager.GetClientConn(cfg.Cfg.Services.LocationTypes)
+	if err != nil {
+		log.Printf("Failed to connect to Locations service: %v", err)
+		errs = append(errs, fmt.Errorf("locations connection failed: %w", err))
+	}
+
 	movementsConn, err := clientManager.GetClientConn(cfg.Cfg.Services.Movements)
 	if err != nil {
 		log.Printf("Failed to connect to Movements service: %v", err)
@@ -61,5 +67,5 @@ func initializeHandler() (*handle.Handler, error) {
 		return nil, fmt.Errorf("failed to initialize all connections: %v", errs)
 	}
 
-	return handle.New(ssoConn, appsConn, locationsConn, movementsConn, productionTasksConn, productSKConn, productsSKStatusesConn, statusesConn), nil
+	return handle.New(ssoConn, appsConn, locationsConn, locationTypesConn, movementsConn, productionTasksConn, productSKConn, productsSKStatusesConn, statusesConn), nil
 }
