@@ -1,7 +1,4 @@
 # Список микросервисов
-
----
-
 ## Основные адреса сервисов
 ### В случае разворачивания на локальной машине
 ```yaml
@@ -299,3 +296,8 @@ curl -X PUT http://localhost:6000/api/v1/products-sk-statuses
 ```yaml
 CONFIG_PATH=config/products_sk_statuses/development.yaml
 ```
+
+---
+## Схема таблиц
+
+![Схема таблиц](sk.drawio.svg)
