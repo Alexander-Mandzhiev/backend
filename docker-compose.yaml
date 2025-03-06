@@ -62,6 +62,8 @@ services:
       - CONFIG_PATH=config/locations/production.yaml
     networks:
       - app-network
+    depends_on:
+      - location_types
     restart: always
 
   location_types:
@@ -76,6 +78,7 @@ services:
     networks:
       - app-network
     restart: always
+
   statuses:
     container_name: statuses
     build:
