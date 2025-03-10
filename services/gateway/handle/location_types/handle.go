@@ -22,7 +22,7 @@ func New(service LocationTypesService) *Handler {
 	return &Handler{service: service}
 }
 func (h *Handler) InitLocationTypesRoutes(api *gin.RouterGroup) {
-	locationTypes := api.Group("/api/v1/location_types")
+	locationTypes := api.Group("/location_types")
 	{
 		locationTypes.POST("", h.create)
 		locationTypes.GET("/:id", h.get)

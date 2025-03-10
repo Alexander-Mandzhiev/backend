@@ -23,7 +23,7 @@ func New(service AppsService) *Handler {
 }
 
 func (h *Handler) InitAppsRoutes(api *gin.RouterGroup) {
-	appRoutes := api.Group("/api/v1/apps")
+	appRoutes := api.Group("/apps")
 
 	appRoutes.POST("", h.create)       // Создание приложения
 	appRoutes.PUT("/:id", h.update)    // Обновление приложения
