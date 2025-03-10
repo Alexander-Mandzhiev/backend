@@ -4,6 +4,13 @@ import (
 	sl "backend/pkg/logger"
 	app "backend/pkg/server/http_server"
 	cfg "backend/services/gateway/config"
+	"backend/services/gateway/handle"
+	apps_handle "backend/services/gateway/handle/apps"
+	location_handle "backend/services/gateway/handle/location"
+	location_types_handle "backend/services/gateway/handle/location_types"
+	sso_handle "backend/services/gateway/handle/sso"
+	"backend/services/gateway/handle/statuses"
+	"backend/services/gateway/service"
 	"context"
 	"log"
 	"net/http"
@@ -18,7 +25,23 @@ func main() {
 	sl.SetupLogger(cfg.Cfg.Env)
 	log.Printf("Starting API Gateway on %s:%d", cfg.Cfg.Address, cfg.Cfg.Port)
 
-	apiServer, err := app.New()
+	connSet, err := service.CreateGRPCClients()
+	if err != nil {
+		log.Fatalf("Failed to initialize gRPC clients: %v", err)
+	}
+	defer connSet.CloseAll()
+
+	gatewayService := service.New(connSet.SsoConn, connSet.AppsConn, connSet.LocationsConn, connSet.LocationTypesConn,
+		connSet.MovementsConn, connSet.ProductionTasksConn, connSet.ProductSKConn, connSet.ProductsSKStatusesConn, connSet.StatusesConn)
+
+	ssoHandler := sso_handle.New(gatewayService.SSOClient)
+	statusesHandler := statuses_handle.New(gatewayService.StatusesClient)
+	locationsHandler := location_handle.New(gatewayService.LocationsClient)
+	appsHandler := apps_handle.New(gatewayService.AppsClient)
+	locationTypesHandle := location_types_handle.New(gatewayService.LocationTypesClient)
+	serverAPI := handle.New(appsHandler, ssoHandler, statusesHandler, locationsHandler, locationTypesHandle)
+
+	apiServer, err := app.New(serverAPI)
 	if err != nil {
 		log.Fatalf("Failed to initialize API Gateway: %v", err)
 	}

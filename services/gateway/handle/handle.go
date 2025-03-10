@@ -2,95 +2,47 @@ package handle
 
 import (
 	sl "backend/pkg/logger"
-	"backend/services/gateway/handle/apps_handle"
-	"backend/services/gateway/handle/location_handle"
-	"backend/services/gateway/handle/location_types_handle"
-	"backend/services/gateway/handle/movements_handle"
-	"backend/services/gateway/handle/production_task_handle"
-	"backend/services/gateway/handle/products_sk_handle"
-	"backend/services/gateway/handle/products_sk_statuses_handle"
-	"backend/services/gateway/handle/sso_handle"
-	"backend/services/gateway/handle/statuses_handle"
+	"backend/services/gateway/handle/apps"
+	"backend/services/gateway/handle/location"
+	"backend/services/gateway/handle/location_types"
+	"backend/services/gateway/handle/sso"
+	"backend/services/gateway/handle/statuses"
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
 	"net/http"
 )
 
-type Handler struct {
-	locationsClient          *location_handle.LocationService
-	locationTypesClient      *location_types_handle.LocationTypesService
-	appsClient               *apps_handle.AppsService
-	ssoClient                *sso_handle.SSOService
-	movementsClient          *movements_handle.MovementsHandle
-	productionTasksClient    *production_task_handle.ProductionTaskHandle
-	productSKClient          *products_sk_handle.ProductionSkHandle
-	productsSKStatusesClient *products_sk_statuses_handle.ProductsSkStatusesService
-	statusesClient           *statuses_handle.StatusesService
+type ServerAPI struct {
+	appsClient          *apps_handle.Handler
+	ssoClient           *sso_handle.Handler
+	statusesClient      *statuses_handle.Handler
+	locationsClient     *location_handle.Handler
+	locationTypesClient *location_types_handle.Handler
 }
 
-func New(ssoConn, appsConn, locationsConn, locationTypesConn, movementsConn, productionTasksConn, productSKConn, productsSKStatusesConn, statusesConn *grpc.ClientConn) *Handler {
-	return &Handler{
-		ssoClient:                sso_handle.New(ssoConn),
-		appsClient:               apps_handle.New(appsConn),
-		locationsClient:          location_handle.New(locationsConn),
-		locationTypesClient:      location_types_handle.New(locationTypesConn),
-		movementsClient:          movements_handle.New(movementsConn),
-		productionTasksClient:    production_task_handle.New(productionTasksConn),
-		productSKClient:          products_sk_handle.New(productSKConn),
-		productsSKStatusesClient: products_sk_statuses_handle.New(productsSKStatusesConn),
-		statusesClient:           statuses_handle.New(statusesConn),
-	}
+func New(appsClient *apps_handle.Handler, ssoClient *sso_handle.Handler, statusesClient *statuses_handle.Handler, locationsClient *location_handle.Handler,
+	locationTypesClient *location_types_handle.Handler) *ServerAPI {
+	return &ServerAPI{appsClient: appsClient, ssoClient: ssoClient, statusesClient: statusesClient, locationsClient: locationsClient,
+		locationTypesClient: locationTypesClient}
 }
 
-func (h *Handler) InitRouters() http.Handler {
+func (h *ServerAPI) InitRouters() http.Handler {
 	router := gin.Default()
 	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
-		Output: sl.NewLoggerWriter(sl.Log), // Используем нашу обертку
+		Output: sl.NewLoggerWriter(sl.Log),
 	}))
 
-	api := router.Group("/api/v1")
 	router.Use(gin.Recovery())
 
-	h.initLocationRoutes(api)
-	h.initLocationTypesRoutes(api)
-	h.initAppsRoutes(api)
-	h.initStatusesRoutes(api)
-	h.initSSORoutes(api)
+	api := router.Group("/api/v1") // Группа API v1
+	{
+		h.appsClient.InitAppsRoutes(api)                   // Инициализация роутов для приложений
+		h.ssoClient.InitSSORoutes(api)                     // Роуты аутентификации
+		h.statusesClient.InitStatusesRoutes(api)           // Роуты статусов
+		h.locationsClient.InitLocationRoutes(api)          // Роуты локаций
+		h.locationTypesClient.InitLocationTypesRoutes(api) // Роуты типов локаций
+	}
+
+	router.GET("/healthcheck", h.healthcheck)
+
 	return router
-}
-
-func (h *Handler) initLocationRoutes(api *gin.RouterGroup) {
-	api.GET("/locations", h.locationsClient.List)
-	api.POST("/locations", h.locationsClient.Create)
-	api.GET("/locations/:id", h.locationsClient.Get)
-	api.PUT("/locations/:id", h.locationsClient.Update)
-	api.DELETE("/locations/:id", h.locationsClient.Delete)
-}
-
-func (h *Handler) initLocationTypesRoutes(api *gin.RouterGroup) {
-	api.POST("/location_types", h.locationTypesClient.Create)
-	api.GET("/location_types", h.locationTypesClient.List)
-	api.GET("/location_types/:id", h.locationTypesClient.Get)
-	api.PUT("/location_types/:id", h.locationTypesClient.Update)
-	api.DELETE("/location_types/:id", h.locationTypesClient.Delete)
-}
-
-func (h *Handler) initAppsRoutes(api *gin.RouterGroup) {
-	api.POST("/apps", h.appsClient.Create)
-	api.GET("/apps", h.appsClient.List)
-	api.GET("/apps/:id", h.appsClient.Get)
-	api.PUT("/apps/:id", h.appsClient.Update)
-	api.DELETE("/apps/:id", h.appsClient.Delete)
-}
-
-func (h *Handler) initStatusesRoutes(api *gin.RouterGroup) {
-	api.POST("/statuses", h.statusesClient.Create)
-	api.GET("/statuses", h.statusesClient.List)
-	api.GET("/statuses/:id", h.statusesClient.Get)
-	api.PUT("/statuses/:id", h.statusesClient.Update)
-	api.DELETE("/statuses/:id", h.statusesClient.Delete)
-}
-
-func (h *Handler) initSSORoutes(api *gin.RouterGroup) {
-	api.POST("/login", h.ssoClient.SignIn)
 }

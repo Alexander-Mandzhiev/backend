@@ -21,5 +21,5 @@ func (s *Service) GetTasks(ctx context.Context, request *production_task.Request
 		return nil, status.Errorf(codes.Internal, "failed getting tasks: %v", err)
 	}
 
-	return &production_task.ProductsResponse{Products: products}, nil
+	return &production_task.ProductsResponse{Data: products}, nil
 }

@@ -21,5 +21,5 @@ func (s *Service) GetTasksInPartName(ctx context.Context, request *production_ta
 		return nil, status.Errorf(codes.Internal, "failed getting tasks in part name: %v", err)
 	}
 
-	return &production_task.ProductsResponse{Products: products}, nil
+	return &production_task.ProductsResponse{Data: products}, nil
 }

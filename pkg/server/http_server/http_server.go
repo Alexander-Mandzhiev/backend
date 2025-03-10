@@ -13,15 +13,10 @@ import (
 
 type APIServer struct {
 	httpserver *http.Server
-	gateway    *handle.Handler
+	gateway    *handle.ServerAPI
 }
 
-func New() (*APIServer, error) {
-	handler, err := initializeHandler()
-	if err != nil {
-		log.Fatalf("Failed to initialize handler: %v", err)
-	}
-
+func New(handler *handle.ServerAPI) (*APIServer, error) {
 	return &APIServer{gateway: handler}, nil
 }
 
