@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *AppsService) Create(ctx context.Context, req *app.CreateRequest) (*app.CreateResponse, error) {
+func (s *Service) Create(ctx context.Context, req *app.CreateRequest) (*app.CreateResponse, error) {
 	op := "apps.Create"
 	if req.Name == "" {
 		sl.Log.Warn("Name is required", slog.String("op", op))

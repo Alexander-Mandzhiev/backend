@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *LocationTypesService) Create(ctx context.Context, req *location_types.CreateLocationTypeRequest) (*location_types.LocationTypeResponse, error) {
+func (s *Service) Create(ctx context.Context, req *location_types.CreateLocationTypeRequest) (*location_types.LocationTypeResponse, error) {
 	op := "LocationTypesService.Create"
 
 	if req == nil {

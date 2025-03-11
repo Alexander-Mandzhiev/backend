@@ -5,10 +5,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-type LocationTypesService struct {
+type Service struct {
 	client location_types.LocationTypeServiceClient
 }
 
-func New(conn *grpc.ClientConn) *LocationTypesService {
-	return &LocationTypesService{client: location_types.NewLocationTypeServiceClient(conn)}
+func New(conn *grpc.ClientConn) *Service {
+	return &Service{client: location_types.NewLocationTypeServiceClient(conn)}
 }

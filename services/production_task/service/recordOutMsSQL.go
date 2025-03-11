@@ -8,8 +8,8 @@ import (
 	"log/slog"
 )
 
-func (s *Service) RecordOutMsSQL(ctx context.Context, ids []int32) error {
-	if err := s.productionTaskProvider.RecordedOutMsSQL(ctx, convertToInt(ids)); err != nil {
+func (s *Service) RecordOutMsSQL(ctx context.Context, ids []int64) error {
+	if err := s.productionTaskProvider.RecordedOutMsSQL(ctx, ids); err != nil {
 		sl.Log.Error("Failed recording out MsSQL", slog.String("error", err.Error()))
 		return status.Errorf(codes.Internal, "failed recording out MsSQL: %v", err)
 	}

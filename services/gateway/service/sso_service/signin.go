@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *SSOService) SignIn(ctx context.Context, req *sso.SignInRequest) (string, error) {
+func (s *Service) SignIn(ctx context.Context, req *sso.SignInRequest) (string, error) {
 	op := "sso.SignIn"
 	if req.Password == 0 || req.AppId <= 0 {
 		sl.Log.Warn("Missing required fields", slog.Int64("password", req.Password), slog.Int("app_id", int(req.AppId)), slog.String("op", op))

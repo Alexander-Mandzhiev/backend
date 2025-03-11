@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *LocationTypesService) Update(ctx context.Context, req *location_types.UpdateLocationTypeRequest) (*location_types.LocationTypeResponse, error) {
+func (s *Service) Update(ctx context.Context, req *location_types.UpdateLocationTypeRequest) (*location_types.LocationTypeResponse, error) {
 	op := "LocationTypesService.Update"
 
 	if req == nil || req.Id <= 0 {

@@ -5,10 +5,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-type MovementsHandle struct {
+type Service struct {
 	client movements.MovementServiceClient
 }
 
-func New(conn *grpc.ClientConn) *MovementsHandle {
-	return &MovementsHandle{client: movements.NewMovementServiceClient(conn)}
+func New(conn *grpc.ClientConn) *Service {
+	return &Service{client: movements.NewMovementServiceClient(conn)}
 }

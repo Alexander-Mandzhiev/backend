@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *LocationService) Update(ctx context.Context, req *locations.UpdateLocationRequest) (*locations.LocationResponse, error) {
+func (s *Service) Update(ctx context.Context, req *locations.UpdateLocationRequest) (*locations.LocationResponse, error) {
 	if req.Id <= 0 {
 		sl.Log.Warn("Invalid ID", slog.String("op", "locations.Update"))
 		return nil, errors.New("invalid ID")

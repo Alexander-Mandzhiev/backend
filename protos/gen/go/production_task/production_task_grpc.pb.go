@@ -28,8 +28,6 @@ const (
 // ProductionTaskServiceClient is the client API for ProductionTaskService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// CRUD методы для для заданий производства
 type ProductionTaskServiceClient interface {
 	GetTasks(ctx context.Context, in *RequestTaskParams, opts ...grpc.CallOption) (*ProductsResponse, error)
 	GetTasksInPartName(ctx context.Context, in *RequestTaskParams, opts ...grpc.CallOption) (*ProductsResponse, error)
@@ -88,8 +86,6 @@ func (c *productionTaskServiceClient) RecordOutMsSQL(ctx context.Context, in *ID
 // ProductionTaskServiceServer is the server API for ProductionTaskService service.
 // All implementations must embed UnimplementedProductionTaskServiceServer
 // for forward compatibility.
-//
-// CRUD методы для для заданий производства
 type ProductionTaskServiceServer interface {
 	GetTasks(context.Context, *RequestTaskParams) (*ProductsResponse, error)
 	GetTasksInPartName(context.Context, *RequestTaskParams) (*ProductsResponse, error)

@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *StatusesService) Create(ctx context.Context, req *statuses.CreateStatusRequest) (*statuses.StatusResponse, error) {
+func (s *Service) Create(ctx context.Context, req *statuses.CreateStatusRequest) (*statuses.StatusResponse, error) {
 	op := "statuses.Create"
 
 	if req.Name == "" {

@@ -8,6 +8,7 @@ import (
 	apps_handle "backend/services/gateway/handle/apps"
 	location_handle "backend/services/gateway/handle/location"
 	location_types_handle "backend/services/gateway/handle/location_types"
+	production_task_handle "backend/services/gateway/handle/production_task"
 	sso_handle "backend/services/gateway/handle/sso"
 	"backend/services/gateway/handle/statuses"
 	"backend/services/gateway/service"
@@ -39,7 +40,9 @@ func main() {
 	locationsHandler := location_handle.New(gatewayService.LocationsClient)
 	appsHandler := apps_handle.New(gatewayService.AppsClient)
 	locationTypesHandle := location_types_handle.New(gatewayService.LocationTypesClient)
-	serverAPI := handle.New(appsHandler, ssoHandler, statusesHandler, locationsHandler, locationTypesHandle)
+	productionTasksHandle := production_task_handle.New(gatewayService.ProductionTasksClient)
+
+	serverAPI := handle.New(appsHandler, ssoHandler, statusesHandler, locationsHandler, locationTypesHandle, productionTasksHandle)
 
 	apiServer, err := app.New(serverAPI)
 	if err != nil {

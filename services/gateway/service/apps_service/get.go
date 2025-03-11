@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *AppsService) Get(ctx context.Context, req *app.GetAppRequest) (*app.GetAppResponse, error) {
+func (s *Service) Get(ctx context.Context, req *app.GetAppRequest) (*app.GetAppResponse, error) {
 	op := "apps.Get"
 	if req.Id == 0 {
 		sl.Log.Warn("Invalid ID", slog.String("op", op))

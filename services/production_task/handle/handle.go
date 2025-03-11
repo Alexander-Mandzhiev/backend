@@ -9,8 +9,8 @@ import (
 type ProductionTaskService interface {
 	GetTasks(ctx context.Context, request *production_task.RequestTaskParams) (*production_task.ProductsResponse, error)
 	GetTasksInPartName(ctx context.Context, request *production_task.RequestTaskParams) (*production_task.ProductsResponse, error)
-	RecordInMsSQL(ctx context.Context, ids []int32) error
-	RecordOutMsSQL(ctx context.Context, ids []int32) error
+	RecordInMsSQL(ctx context.Context, ids []int64) error
+	RecordOutMsSQL(ctx context.Context, ids []int64) error
 }
 
 type serverAPI struct {

@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *StatusesService) Delete(ctx context.Context, req *statuses.DeleteStatusRequest) (*statuses.DeleteStatusResponse, error) {
+func (s *Service) Delete(ctx context.Context, req *statuses.DeleteStatusRequest) (*statuses.DeleteStatusResponse, error) {
 	op := "statuses.Delete"
 	if req.Id == 0 {
 		sl.Log.Warn("Invalid ID", slog.Int("id", int(req.Id)), slog.String("op", op))

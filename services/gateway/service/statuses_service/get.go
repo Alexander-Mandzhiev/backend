@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *StatusesService) Get(ctx context.Context, req *statuses.GetStatusRequest) (*statuses.StatusResponse, error) {
+func (s *Service) Get(ctx context.Context, req *statuses.GetStatusRequest) (*statuses.StatusResponse, error) {
 	op := "statuses.Get"
 
 	if req.Id == 0 {

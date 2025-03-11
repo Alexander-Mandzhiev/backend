@@ -7,7 +7,7 @@ import (
 	"log/slog"
 )
 
-func (s *StatusesService) List(ctx context.Context, req *statuses.ListStatusesRequest) (*statuses.StatusListResponse, error) {
+func (s *Service) List(ctx context.Context, req *statuses.ListStatusesRequest) (*statuses.StatusListResponse, error) {
 	op := "statuses.List"
 	sl.Log.Info("Listing statuses", slog.String("op", op))
 	resp, err := s.client.List(ctx, req)

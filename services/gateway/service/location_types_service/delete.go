@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *LocationTypesService) Delete(ctx context.Context, req *location_types.DeleteLocationTypeRequest) (*location_types.DeleteLocationTypeResponse, error) {
+func (s *Service) Delete(ctx context.Context, req *location_types.DeleteLocationTypeRequest) (*location_types.DeleteLocationTypeResponse, error) {
 	op := "LocationTypesService.Delete"
 	if req.Id <= 0 {
 		sl.Log.Warn("Invalid ID", slog.String("op", op))

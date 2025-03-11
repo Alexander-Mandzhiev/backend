@@ -7,7 +7,7 @@ import (
 	"log/slog"
 )
 
-func (s *AppsService) List(ctx context.Context, req *app.GetAppsRequest) (*app.GetAppsResponse, error) {
+func (s *Service) List(ctx context.Context, req *app.GetAppsRequest) (*app.GetAppsResponse, error) {
 	op := "apps.List"
 	sl.Log.Info("Listing apps", slog.String("op", op))
 

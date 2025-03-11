@@ -5,10 +5,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-type AppsService struct {
+type Service struct {
 	client app.AppProviderServiceClient
 }
 
-func New(conn *grpc.ClientConn) *AppsService {
-	return &AppsService{client: app.NewAppProviderServiceClient(conn)}
+func New(conn *grpc.ClientConn) *Service {
+	return &Service{client: app.NewAppProviderServiceClient(conn)}
 }

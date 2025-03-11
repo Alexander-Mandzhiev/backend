@@ -14,17 +14,17 @@ import (
 )
 
 type Service struct {
-	AppsClient *apps_service.AppsService
-	SSOClient  *sso_service.SSOService
+	AppsClient *apps_service.Service
+	SSOClient  *sso_service.Service
 
-	LocationsClient     *location_service.LocationService
-	LocationTypesClient *location_types_service.LocationTypesService
-	StatusesClient      *statuses_service.StatusesService
+	LocationsClient     *location_service.Service
+	LocationTypesClient *location_types_service.Service
+	StatusesClient      *statuses_service.Service
 
-	ProductSKClient          *products_sk_service.ProductionSkHandle
-	MovementsClient          *movements_service.MovementsHandle
-	ProductionTasksClient    *production_task_service.ProductionTaskHandle
-	ProductsSKStatusesClient *products_sk_statuses_service.ProductsSkStatusesService
+	ProductSKClient          *products_sk_service.Service
+	MovementsClient          *movements_service.Service
+	ProductionTasksClient    *production_task_service.Service
+	ProductsSKStatusesClient *products_sk_statuses_service.Service
 }
 
 func New(ssoConn, appsConn, locationsConn, locationTypesConn, movementsConn, productionTasksConn, productSKConn,

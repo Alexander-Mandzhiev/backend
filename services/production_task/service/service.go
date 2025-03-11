@@ -13,10 +13,10 @@ var (
 )
 
 type ProductionTaskProvider interface {
-	Tasks(ctx context.Context, params *production_task.RequestTaskParams) ([]*production_task.Product, error)
-	TaskInPartName(ctx context.Context, params *production_task.RequestTaskParams) ([]*production_task.Product, error)
-	RecordedInMsSQL(ctx context.Context, ids []int) error
-	RecordedOutMsSQL(ctx context.Context, ids []int) error
+	Tasks(ctx context.Context, params *production_task.RequestTaskParams) (*production_task.ProductsResponse, error)
+	TaskInPartName(ctx context.Context, params *production_task.RequestTaskParams) (*production_task.ProductsResponse, error)
+	RecordedInMsSQL(ctx context.Context, ids []int64) error
+	RecordedOutMsSQL(ctx context.Context, ids []int64) error
 }
 
 type Service struct {

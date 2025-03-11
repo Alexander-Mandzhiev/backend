@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *StatusesService) Update(ctx context.Context, req *statuses.UpdateStatusRequest) (*statuses.StatusResponse, error) {
+func (s *Service) Update(ctx context.Context, req *statuses.UpdateStatusRequest) (*statuses.StatusResponse, error) {
 	op := "statuses.Update"
 
 	if req.Id == 0 {

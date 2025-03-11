@@ -7,7 +7,7 @@ import (
 	"log/slog"
 )
 
-func (s *LocationTypesService) List(ctx context.Context, req *location_types.ListLocationTypesRequest) (*location_types.LocationTypeListResponse, error) {
+func (s *Service) List(ctx context.Context, req *location_types.ListLocationTypesRequest) (*location_types.LocationTypeListResponse, error) {
 	op := "LocationTypesService.List"
 	sl.Log.Info("Listing locations", slog.String("op", op))
 	resp, err := s.client.List(ctx, req)

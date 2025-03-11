@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *LocationService) Create(ctx context.Context, req *locations.CreateLocationRequest) (*locations.LocationResponse, error) {
+func (s *Service) Create(ctx context.Context, req *locations.CreateLocationRequest) (*locations.LocationResponse, error) {
 	if req.Name == "" || req.TypeId <= 0 || req.Capacity <= 0 {
 		sl.Log.Warn("Missing required fields", slog.String("op", "locations.Create"))
 		return nil, errors.New("name, type_id, and capacity are required")

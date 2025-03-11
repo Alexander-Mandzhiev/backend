@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *LocationTypesService) Get(ctx context.Context, req *location_types.GetLocationTypeRequest) (*location_types.LocationTypeResponse, error) {
+func (s *Service) Get(ctx context.Context, req *location_types.GetLocationTypeRequest) (*location_types.LocationTypeResponse, error) {
 	op := "LocationTypesService.Get"
 
 	if req == nil || req.Id <= 0 {

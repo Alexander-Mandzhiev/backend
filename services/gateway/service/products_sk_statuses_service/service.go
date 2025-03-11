@@ -5,10 +5,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-type ProductsSkStatusesService struct {
+type Service struct {
 	client products_sk_statuses.ProductStatusServiceClient
 }
 
-func New(conn *grpc.ClientConn) *ProductsSkStatusesService {
-	return &ProductsSkStatusesService{client: products_sk_statuses.NewProductStatusServiceClient(conn)}
+func New(conn *grpc.ClientConn) *Service {
+	return &Service{client: products_sk_statuses.NewProductStatusServiceClient(conn)}
 }
