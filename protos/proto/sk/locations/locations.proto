@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package sk.locations;
+option go_package = "sk.v1;locations";
+
+// Локация (ответ)
+message LocationResponse {
+  int32 id = 1;
+  string name = 2;
+  string type = 3;
+  int32 capacity = 4;
+  int32 current_load = 5;
+}
+
+// CRUD методы для локаций
+service LocationService {
+  rpc CreateLocation(CreateLocationRequest) returns (LocationResponse);
+  rpc GetLocation(GetLocationRequest) returns (LocationResponse);
+  rpc UpdateLocation(UpdateLocationRequest) returns (LocationResponse);
+  rpc DeleteLocation(DeleteLocationRequest) returns (DeleteLocationResponse);
+  rpc ListLocation(ListLocationsRequest) returns (LocationListResponse);
+}
+
+// Запрос на создание локации
+message CreateLocationRequest {
+  string name = 1;
+  int32 type_id = 2;
+  int32 capacity = 3;
+  int32 current_load = 4;
+}
+
+// Запрос на получение локации
+message GetLocationRequest {
+  int32 id = 1;
+}
+
+// Запрос на обновление локации
+message UpdateLocationRequest {
+  int32 id = 1;
+  string name = 2;
+  int32 type_id = 3;
+  int32 capacity = 4;
+  int32 current_load = 5;
+}
+
+// Запрос на удаление локации
+message DeleteLocationRequest {
+  int32 id = 1;
+}
+message DeleteLocationResponse {
+  bool success = 1; // true, если удаление успешно
+}
+
+// Пустой запрос для получения списка локаций
+message ListLocationsRequest {}
+message LocationListResponse {
+  repeated LocationResponse data = 1;
+}

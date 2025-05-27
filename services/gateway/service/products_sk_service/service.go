@@ -1,7 +1,7 @@
-package products_sk_service
+package product_status_history
 
 import (
-	"backend/protos/gen/go/products_sk"
+	"backend/protos/gen/go/sk/products_sk"
 	"google.golang.org/grpc"
 )
 

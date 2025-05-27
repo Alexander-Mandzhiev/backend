@@ -8,6 +8,7 @@ CREATE TABLE movements (
     user_id INT NOT NULL,
     comment TEXT,
     created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
     removed_at DATETIME NULL,
     FOREIGN KEY (from_location_id) REFERENCES locations(id),
     FOREIGN KEY (to_location_id) REFERENCES locations(id)

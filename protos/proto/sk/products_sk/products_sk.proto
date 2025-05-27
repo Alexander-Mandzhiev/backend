@@ -1,0 +1,76 @@
+syntax = "proto3";
+package products_sk;
+option go_package = "products_sk.v1;products_sk";
+
+import "google/protobuf/timestamp.proto";
+
+message ProductResponse {
+  int64 id = 1;
+  string part_name = 2;
+  string nomenclature = 3;
+  int32 number_frame = 4;
+  optional int32 count_sausage_sticks = 5;
+  double weight_sp_kg = 6;
+  optional double weight_gp_kg = 7;
+  google.protobuf.Timestamp manufacturing_date = 8;
+  google.protobuf.Timestamp created_at = 9;
+  optional google.protobuf.Timestamp removed_at = 10;
+}
+
+service ProductService {
+  rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
+  rpc GetProduct(GetProductRequest) returns (ProductResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
+  rpc ListProducts(ListProductsRequest) returns (ProductListResponse);
+  rpc ProductsByStatus(ProductsByStatusRequest) returns (InitializeProductResponse);
+}
+
+message CreateProductRequest {
+  string part_name = 1;
+  string nomenclature = 2;
+  int32 number_frame = 3;
+  optional int32 count_sausage_sticks = 4;
+  double weight_sp_kg = 5;
+  optional double weight_gp_kg = 6;
+  google.protobuf.Timestamp manufacturing_date = 7;
+}
+
+message UpdateProductRequest {
+  int64 id = 1;
+  string part_name = 2;
+  string nomenclature = 3;
+  int32 number_frame = 4;
+  int32 count_sausage_sticks = 5;
+  double weight_sp_kg = 6;
+  double weight_gp_kg = 7;
+  google.protobuf.Timestamp manufacturing_date = 8;
+}
+
+message InitializeProductResponse {
+  repeated ProductResponse created_products = 1;
+  repeated ProductCreationError errors = 2;
+}
+
+message ProductCreationError {
+  int32 data_index = 1;
+  string error_message = 2;
+}
+
+message GetProductRequest { int64 id = 1; }
+message DeleteProductRequest { int64 id = 1; }
+message DeleteProductResponse { bool success = 1; }
+message ListProductsRequest {
+  int32 page = 1;
+  int32 count = 2;
+}
+message ProductListResponse {
+  repeated ProductResponse data = 1;
+  int32 total_pages = 2;
+  int32 total_items = 3;
+}
+message ProductsByStatusRequest {
+  int32 status_id = 1;
+  int32 page = 2;
+  int32 count = 3;
+}

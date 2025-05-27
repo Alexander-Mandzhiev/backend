@@ -10,18 +10,19 @@ import (
 )
 
 const (
-	tail = `FROM operfas
-        LEFT JOIN tov ON tov.tov_id = operfas.operfas_srctov
-        LEFT JOIN tara ON operfas.operfas_srctara = tara.tara_id
-        LEFT JOIN part ON part.part_id = operfas.operfas_srcpart
-        LEFT JOIN reports_recorded_mssql ON reports_recorded_mssql.operfas_id = operfas.operfas_id
-    WHERE operfas.operfas_dt BETWEEN ? AND ?
-        AND operfas.operfas_srcnet <> 0
-        AND operfas.operfas_srcskl = ?
-        AND tara.tara_type = 2809
-        AND reports_recorded_mssql.operfas_id IS NULL`
-	searchCondition = "LOWER(part.part_name) LIKE LOWER(?) OR LOWER(tov.tov_name) LIKE LOWER(?)"
-	groupByClause   = "GROUP BY tov.tov_name, part.part_name"
+	tail = `FROM REGSKLMOV
+        JOIN TARA on REGSKLMOV.REGSKLMOV_TARA = TARA.TARA_ID
+        JOIN PART on PART.PART_ID = REGSKLMOV.REGSKLMOV_PART
+        JOIN TOV on TOV.TOV_ID = REGSKLMOV.REGSKLMOV_TOV
+        JOIN SKL on SKL.SKL_ID = REGSKLMOV.REGSKLMOV_SKL
+        JOIN REGSKLOST on REGSKLOST.REGSKLOST_PART = REGSKLMOV.REGSKLMOV_PART
+    WHERE PART.PART_START BETWEEN ? AND ?
+        AND REGSKLMOV.REGSKLMOV_SKL = ?
+        AND TARA.TARA_TYPE = 2809
+        AND REGSKLMOV.REGSKLMOV_TYPE = 1`
+
+	searchCondition = "AND (LOWER(part.part_name) LIKE LOWER(?) OR LOWER(tov.tov_name) LIKE LOWER(?))"
+	groupByClause   = "GROUP BY tov.tov_name, part.part_name, PART.PART_START"
 )
 
 func (r *Repository) Tasks(ctx context.Context, params *production_task.RequestTaskParams) (*production_task.ProductsResponse, error) {
@@ -56,24 +57,41 @@ func (r *Repository) getTasks(ctx context.Context, params *production_task.Reque
 	count := int(params.GetCount())
 	sklID := params.GetSklId()
 	search := params.GetSearch()
+
 	dateStart := time.Unix(params.DateStart.Seconds, 0)
 	dateEnd := time.Unix(params.DateEnd.Seconds, 0)
 
-	skip := count * (page - 1)
-
-	query := "SELECT FIRST ? SKIP ? MAX(operfas.operfas_dt) AS max_operfas_dt, SUM(operfas.operfas_srcnet) AS max_operfas_srcnet, tov.tov_name, part.part_name, COUNT(*) AS countTara " + tail
-
-	var args []interface{}
-	args = append(args, count, skip, dateStart, dateEnd, sklID)
+	query := `SELECT 
+        MAX(PART.PART_START) AS max_part_start,
+        SUM(REGSKLMOV.REGSKLMOV_KOL) AS total_kol,
+        SUM(REGSKLMOV.REGSKLMOV_NET) AS total_net,
+        tov.tov_name, 
+        part.part_name,
+        COUNT(*) AS count_tara 
+    ` + tail
 
 	if search != "" {
-		query += " AND (" + searchCondition + ")"
+		query += " " + searchCondition
+	}
+
+	query += " " + groupByClause + " " + orderClause
+
+	finalQuery := fmt.Sprintf(`
+        SELECT FIRST %d SKIP %d 
+            max_part_start,
+            total_kol,
+            total_net,
+            tov_name,
+            part_name,
+            count_tara 
+        FROM (%s)`, count, count*(page-1), query)
+
+	args := []interface{}{dateStart, dateEnd, sklID}
+	if search != "" {
 		args = append(args, "%"+search+"%", "%"+search+"%")
 	}
 
-	query += " " + groupByClause
-
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	rows, err := r.db.QueryContext(ctx, finalQuery, args...)
 	if err != nil {
 		sl.Log.Error(op, "failed to execute task query: ", err)
 		return nil, fmt.Errorf("failed to execute task query: %w", err)
@@ -83,23 +101,28 @@ func (r *Repository) getTasks(ctx context.Context, params *production_task.Reque
 	for rows.Next() {
 		var task production_task.Product
 		var manufacturingDate time.Time
+		var countTara int
 
-		if err = rows.Scan(
+		err = rows.Scan(
 			&manufacturingDate,
+			&task.CountSausageSticks,
 			&task.WeightSpKg,
 			&task.Nomenclature,
 			&task.PartName,
-			&task.NumberFrame,
-		); err != nil {
+			&countTara,
+		)
+		if err != nil {
 			sl.Log.Error(op, "failed to scan task row: ", err)
 			continue
 		}
+
 		task.ManufacturingDate = timestamppb.New(manufacturingDate)
+		task.NumberFrame = fmt.Sprintf("%d", countTara) // Конвертация в строку
 		tasks = append(tasks, &task)
 	}
 
 	if err = rows.Err(); err != nil {
-		sl.Log.Error(op, "error encountered during row iteration: ", err)
+		sl.Log.Error(op, "error during row iteration: ", err)
 		return nil, fmt.Errorf("error during row iteration: %w", err)
 	}
 

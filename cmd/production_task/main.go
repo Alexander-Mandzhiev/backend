@@ -22,7 +22,7 @@ func main() {
 	sl.Log.Info("Starting service sso", slog.String("address", cfg.Cfg.GRPCServer.Address), slog.Int("port", cfg.Cfg.GRPCServer.Port))
 	sl.Log.Debug("Debug messages are enabled")
 
-	clientManager := grpc_client.NewGRPCClientManager()
+	clientManager := grpc_client.NewGRPCClientManager(sl.Log)
 	defer clientManager.CloseAll()
 
 	db, err := dbManager.OpenFirebirdConnection(cfg.Cfg.DBConfig.Firebird.ConnectionString, cfg.Cfg.DBConfig.Firebird.MaxOpenConnections, cfg.Cfg.DBConfig.Firebird.MaxIdleConnections, cfg.Cfg.DBConfig.Firebird.ConnMaxLifetime)

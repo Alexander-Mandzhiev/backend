@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package sk.statuses;
+option go_package = "sk.v1;statuses";
+
+// Статус продукции
+message StatusResponse {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+// CRUD методы для статусов
+service StatusService {
+  rpc CreateStatus(CreateStatusRequest) returns (StatusResponse);
+  rpc GetStatus(GetStatusRequest) returns (StatusResponse);
+  rpc UpdateStatus(UpdateStatusRequest) returns (StatusResponse);
+  rpc DeleteStatus(DeleteStatusRequest) returns (DeleteStatusResponse);
+  rpc ListStatuses(ListStatusesRequest) returns (StatusListResponse);
+}
+
+// Запрос на создание статуса
+message CreateStatusRequest {
+  string name = 1;
+  string description = 2;
+}
+
+
+// Запрос на обновление статуса
+message UpdateStatusRequest {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message GetStatusRequest {int32 id = 1;}
+message DeleteStatusRequest {int32 id = 1;}
+message DeleteStatusResponse {bool success = 1;}
+message ListStatusesRequest {}
+message StatusListResponse {repeated StatusResponse data = 1;}

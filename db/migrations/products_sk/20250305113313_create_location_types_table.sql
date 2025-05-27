@@ -5,6 +5,10 @@ CREATE TABLE location_types (
     name VARCHAR(150) NOT NULL, -- Например, "сушилка", "склад"
     description TEXT NULL
 );
+
+INSERT INTO location_types (name, description) VALUES -- Вставляем типы локаций
+    ('сушилка', ''), -- dryer
+    ('склад', ''); -- warehouse
 -- +goose StatementEnd
 
 -- +goose Down

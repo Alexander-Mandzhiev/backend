@@ -5,11 +5,11 @@ import (
 	app "backend/pkg/server/http_server"
 	cfg "backend/services/gateway/config"
 	"backend/services/gateway/handle"
-	apps_handle "backend/services/gateway/handle/apps"
-	location_handle "backend/services/gateway/handle/location"
-	location_types_handle "backend/services/gateway/handle/location_types"
-	production_task_handle "backend/services/gateway/handle/production_task"
-	sso_handle "backend/services/gateway/handle/sso"
+	"backend/services/gateway/handle/apps"
+	"backend/services/gateway/handle/location"
+	"backend/services/gateway/handle/location_types"
+	"backend/services/gateway/handle/production_task"
+	"backend/services/gateway/handle/sso"
 	"backend/services/gateway/handle/statuses"
 	"backend/services/gateway/service"
 	"context"
@@ -36,11 +36,12 @@ func main() {
 		connSet.MovementsConn, connSet.ProductionTasksConn, connSet.ProductSKConn, connSet.ProductsSKStatusesConn, connSet.StatusesConn)
 
 	ssoHandler := sso_handle.New(gatewayService.SSOClient)
-	statusesHandler := statuses_handle.New(gatewayService.StatusesClient)
-	locationsHandler := location_handle.New(gatewayService.LocationsClient)
 	appsHandler := apps_handle.New(gatewayService.AppsClient)
-	locationTypesHandle := location_types_handle.New(gatewayService.LocationTypesClient)
 	productionTasksHandle := production_task_handle.New(gatewayService.ProductionTasksClient)
+
+	locationTypesHandle := location_types_handle.New(gatewayService.LocationTypesClient)
+	locationsHandler := location_handle.New(gatewayService.LocationsClient)
+	statusesHandler := statuses_handle.New(gatewayService.StatusesClient)
 
 	serverAPI := handle.New(appsHandler, ssoHandler, statusesHandler, locationsHandler, locationTypesHandle, productionTasksHandle)
 

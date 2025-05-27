@@ -25,10 +25,10 @@ message Product {
   int64 id = 1;
   google.protobuf.Timestamp manufacturing_date = 2;
   string nomenclature = 3;
-  int32 number_frame = 4;
+  string number_frame = 4;
   string part_name = 5;
-  double weight_sp_kg = 6;
-  double weight_gp_kg = 7;
+  double count_sausage_sticks = 6;
+  double weight_sp_kg = 7;
 }
 
 message ProductsResponse {

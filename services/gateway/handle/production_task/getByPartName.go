@@ -13,6 +13,7 @@ func (h *Handler) getByPartName(c *gin.Context) {
 	op := "ProductionTask.GetByPartName"
 	var reqData struct {
 		PartName string `json:"part_name"`
+		SklID    int32  `json:"skl_id"`
 		Page     int32  `json:"page"`
 		Count    int32  `json:"count"`
 	}
@@ -33,6 +34,7 @@ func (h *Handler) getByPartName(c *gin.Context) {
 		PartName: reqData.PartName,
 		Page:     reqData.Page,
 		Count:    reqData.Count,
+		SklId:    reqData.SklID,
 	}
 
 	resp, err := h.service.GetTasksByPartName(c.Request.Context(), grpcReq)

@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package sk.location_types;
+option go_package = "sk.v1;location_types";
+
+message LocationTypeResponse {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+service LocationTypeService {
+  rpc CreateLocationType(CreateLocationTypeRequest) returns (LocationTypeResponse);
+  rpc GetLocationType(GetLocationTypeRequest) returns (LocationTypeResponse);
+  rpc UpdateLocationType(UpdateLocationTypeRequest) returns (LocationTypeResponse);
+  rpc DeleteLocationType(DeleteLocationTypeRequest) returns (DeleteLocationTypeResponse);
+  rpc ListLocationType(ListLocationTypesRequest) returns (LocationTypeListResponse);
+}
+
+message CreateLocationTypeRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message GetLocationTypeRequest {
+  int32 id = 1;
+}
+
+message UpdateLocationTypeRequest {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message DeleteLocationTypeRequest {
+  int32 id = 1;
+}
+
+message DeleteLocationTypeResponse {
+  bool success = 1;
+}
+
+message ListLocationTypesRequest {}
+
+message LocationTypeListResponse {
+  repeated LocationTypeResponse data = 1;
+}

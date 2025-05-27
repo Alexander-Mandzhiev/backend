@@ -1,7 +1,7 @@
 package movements_service
 
 import (
-	"backend/protos/gen/go/movements"
+	"backend/protos/gen/go/sk/movements"
 	"google.golang.org/grpc"
 )
 

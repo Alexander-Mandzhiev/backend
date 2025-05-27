@@ -10,12 +10,21 @@ import (
 )
 
 const (
-	startDate = "2024-01-01"
-)
+	baseConditions = `
+  FROM REGSKLMOV
+    JOIN TARA on REGSKLMOV.REGSKLMOV_TARA = TARA.TARA_ID
+    JOIN PART on PART.PART_ID = REGSKLMOV.REGSKLMOV_PART
+    JOIN TOV on TOV.TOV_ID = REGSKLMOV.REGSKLMOV_TOV
+    JOIN SKL on SKL.SKL_ID = REGSKLMOV.REGSKLMOV_SKL
+    JOIN REGSKLOST on REGSKLOST.REGSKLOST_PART = REGSKLMOV.REGSKLMOV_PART
+  WHERE part.part_name = ?
+    AND REGSKLMOV.REGSKLMOV_SKL = ?
+    AND TARA.TARA_TYPE = 2809
+    AND REGSKLMOV.REGSKLMOV_TYPE = 1
+    AND PART.PART_START >= '01.01.2025'`
 
-func getCurrentDate() string {
-	return time.Now().Format("2006-01-02")
-}
+	orderClause = "ORDER BY TOV.TOV_NAME, PART.PART_NAME"
+)
 
 func (r *Repository) TaskInPartName(ctx context.Context, params *production_task.RequestTaskParams) (*production_task.ProductsResponse, error) {
 	op := "FirebirdRepository.TaskInPartName"
@@ -51,26 +60,16 @@ func (r *Repository) TaskInPartName(ctx context.Context, params *production_task
 
 func (r *Repository) getTasksInPName(ctx context.Context, params *production_task.RequestTaskParams, skip int) ([]production_task.Product, error) {
 	query := `SELECT FIRST ? SKIP ? 
-        operfas.operfas_id,
-        MAX(operfas.operfas_dt) AS max_operfas_dt, 
-        MAX(operfas.operfas_srcnet) AS max_operfas_srcnet,
-        tov.tov_name, 
-        part.part_name,
-        tara.tara_code
-    FROM operfas 
-    LEFT JOIN tov ON tov.tov_id = operfas.operfas_srctov 
-    LEFT JOIN tara ON operfas.operfas_srctara = tara.tara_id 
-    LEFT JOIN part ON part.part_id = operfas.operfas_srcpart 
-    LEFT JOIN reports_recorded_mssql ON reports_recorded_mssql.operfas_id = operfas.operfas_id 
-    WHERE operfas.operfas_dt BETWEEN ? AND ?
-        AND operfas.operfas_srcnet <> 0 
-        AND part.part_name = ?
-        AND operfas.operfas_srcskl = ?
-        AND tara.tara_type = 2809
-        AND reports_recorded_mssql.operfas_id IS NULL
-    GROUP BY tov.tov_name, part.part_name, tara.tara_code, operfas.operfas_id;`
+        PART.part_id,
+        TOV.TOV_NAME,
+        PART.PART_NAME,
+        PART.PART_START,
+        TARA.TARA_NAME,
+        REGSKLMOV.REGSKLMOV_KOL,
+        REGSKLMOV.REGSKLMOV_NET ` +
+		baseConditions + " " + orderClause
 
-	rows, err := r.db.QueryContext(ctx, query, params.Count, skip, startDate, getCurrentDate(), params.PartName, params.GetSklId())
+	rows, err := r.db.QueryContext(ctx, query, params.Count, skip, params.PartName, params.GetSklId())
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute query: %w", err)
 	}
@@ -81,7 +80,7 @@ func (r *Repository) getTasksInPName(ctx context.Context, params *production_tas
 		var task production_task.Product
 		var manufacturingDate time.Time
 
-		err = rows.Scan(&task.Id, &manufacturingDate, &task.WeightSpKg, &task.Nomenclature, &task.PartName, &task.NumberFrame)
+		err = rows.Scan(&task.Id, &task.Nomenclature, &task.PartName, &manufacturingDate, &task.NumberFrame, &task.CountSausageSticks, &task.WeightSpKg)
 		if err != nil {
 			return nil, fmt.Errorf("row iteration error: %w", err)
 		}
@@ -94,21 +93,10 @@ func (r *Repository) getTasksInPName(ctx context.Context, params *production_tas
 }
 
 func (r *Repository) getTotalCount(ctx context.Context, params *production_task.RequestTaskParams) (int, error) {
-	countQuery := `SELECT COUNT(*) 
-        FROM operfas 
-        LEFT JOIN tov ON tov.tov_id = operfas.operfas_srctov 
-        LEFT JOIN tara ON operfas.operfas_srctara = tara.tara_id 
-        LEFT JOIN part ON part.part_id = operfas.operfas_srcpart 
-        LEFT JOIN reports_recorded_mssql ON reports_recorded_mssql.operfas_id = operfas.operfas_id 
-        WHERE operfas.operfas_dt BETWEEN ? AND ?
-            AND operfas.operfas_srcnet <> 0 
-            AND part.part_name = ?
-            AND operfas.operfas_srcskl = ?
-            AND tara.tara_type = 2809
-            AND reports_recorded_mssql.operfas_id IS NULL;`
+	countQuery := `SELECT COUNT(*) ` + baseConditions
 
 	var totalCount int
-	countRow := r.db.QueryRowContext(ctx, countQuery, startDate, getCurrentDate(), params.PartName, params.GetSklId())
+	countRow := r.db.QueryRowContext(ctx, countQuery, params.PartName, params.GetSklId())
 	err := countRow.Scan(&totalCount)
 	if err != nil {
 		return 0, fmt.Errorf("failed to scan total count: %w", err)
